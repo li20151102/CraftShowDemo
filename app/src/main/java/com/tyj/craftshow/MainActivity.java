@@ -1,11 +1,13 @@
 package com.tyj.craftshow;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -23,11 +25,13 @@ import com.tyj.craftshow.http.BaseResponse;
 import com.tyj.craftshow.http.RetrofitUtil;
 import com.tyj.craftshow.http.RxSchedulers;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
+        mViewPager.setVisibility(View.VISIBLE);
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         list.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505151847685&di=c7a4b5d08ec43fa629bcb690039a7629&imgtype=0&src=http%3A%2F%2Fattimg.dospy.com%2Fimg%2Fday_080625%2F20080625_2e91a10c444877e88827vri2ZKdGMvQo.jpg");
         list.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505151825129&di=70bf74b87d8a15cb91a2d79f15ed0eaf&imgtype=0&src=http%3A%2F%2Fattimg.dospy.com%2Fimg%2Fday_081016%2F20081016_fee215664d5740e56c13E2YB8giERFEX.jpg");
         list.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505746504&di=930c4d677a02328a142d6fa85ed14580&imgtype=jpg&er=1&src=http%3A%2F%2Fattimg.dospy.com%2Fimg%2Fday_090113%2F20090113_6ac58b42bea94f0b318e1B6BZb5lPZl5.jpg");
+
         getData(list);
     }
 
@@ -189,14 +194,18 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onNext(BaseResponse baseResponse) {
                         List<String> dd = (List<String>) baseResponse.getData();
-//                        Log.e("TAG",dd.get(0)+"");
                         for(int i=0;i<dd.size();i++){
                             Log.e("TAG",dd.get(i)+"");
                         }
-
-                        Glide.with(getApplicationContext()).load("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505151721118&di=649c9a43aed72fbc4d99ec1a031510c6&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F015c7d574b9f8f6ac72525aee98351.jpg")
-                                .thumbnail(0.1f)
-                                .into(imageView);
+                        imageView.setVisibility(View.VISIBLE);
+                        mViewPager.setVisibility(View.GONE);
+                        try {
+                            //不知为何无效getBitmapFormUri
+                            Glide.with(getApplicationContext()).asBitmap().load(getBitmapFormUri(MainActivity.this, Uri.parse("http://sowcar.com/t6/694/1554169906x1707632075.jpg")))
+                                    .into(imageView);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
@@ -212,56 +221,67 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     /**
+     * 通过uri获取图片并进行压缩
      *
-     * @param inSampleSize  可以根据需求计算出合理的inSampleSize
-     * */
-    public static void compress(int inSampleSize) {
-        File sdFile = Environment.getExternalStorageDirectory();
-        File originFile = new File(sdFile, "originImg.jpg");
-        BitmapFactory.Options options = new BitmapFactory.Options();    //设置此参数是仅仅读取图片的宽高到options中，不会将整张图片读到内存中，防止oom
-         options.inJustDecodeBounds = true;
-         Bitmap emptyBitmap = BitmapFactory.decodeFile(originFile.getAbsolutePath(), options);
-         options.inJustDecodeBounds = false;
-         options.inSampleSize = inSampleSize;
-         Bitmap resultBitmap = BitmapFactory.decodeFile(originFile.getAbsolutePath(), options);
-         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-         resultBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-         try {
-             FileOutputStream fos = new FileOutputStream(new File(sdFile, "resultImg.jpg"));
-             fos.write(bos.toByteArray());
-             fos.flush();
-             fos.close();
-         } catch (FileNotFoundException e) {
-             e.printStackTrace();
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
+     * @param uri
+     */
+    public static Bitmap getBitmapFormUri(Activity ac, Uri uri) throws FileNotFoundException, IOException {
+        InputStream input = ac.getContentResolver().openInputStream(uri);
+        BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
+        onlyBoundsOptions.inJustDecodeBounds = true;
+        onlyBoundsOptions.inDither = true;//optional
+        onlyBoundsOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;//optional
+        BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
+        input.close();
+        int originalWidth = onlyBoundsOptions.outWidth;
+        int originalHeight = onlyBoundsOptions.outHeight;
+        if ((originalWidth == -1) || (originalHeight == -1))
+            return null;
+        //图片分辨率以480x800为标准
+        float hh = 800f;//这里设置高度为800f
+        float ww = 480f;//这里设置宽度为480f
+        //缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
+        int be = 1;//be=1表示不缩放
+        if (originalWidth > originalHeight && originalWidth > ww) {//如果宽度大的话根据宽度固定大小缩放
+            be = (int) (originalWidth / ww);
+        } else if (originalWidth < originalHeight && originalHeight > hh) {//如果高度高的话根据宽度固定大小缩放
+            be = (int) (originalHeight / hh);
+        }
+        if (be <= 0)
+            be = 1;
+        //比例压缩
+        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+        bitmapOptions.inSampleSize = be;//设置缩放比例
+        bitmapOptions.inDither = true;//optional
+        bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;//optional
+        input = ac.getContentResolver().openInputStream(uri);
+        Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
+        input.close();
+
+        return compressImage(bitmap);//再进行质量压缩
     }
 
-    public void compress(View v) {
-        File sdFile = Environment.getExternalStorageDirectory();
-        File originFile = new File(sdFile, "originImg.jpg");
-        Bitmap bitmap = BitmapFactory.decodeFile(originFile.getAbsolutePath());    //设置缩放比
-         int radio = 8;
-         Bitmap result = Bitmap.createBitmap(bitmap.getWidth() / radio,
-                 bitmap.getHeight() / radio, Bitmap.Config.ARGB_8888);
-         Canvas canvas = new Canvas(result);
-         RectF rectF = new RectF(0, 0, bitmap.getWidth() / radio, bitmap.getHeight() / radio);    //将原图画在缩放之后的矩形上
-         canvas.drawBitmap(bitmap, null, rectF, null);
-         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-         result.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-         try {
-             FileOutputStream fos = new FileOutputStream(new File(sdFile, "sizeCompress.jpg"));
-             fos.write(bos.toByteArray());
-             fos.flush();
-             fos.close();
-         } catch (FileNotFoundException e) {
-             e.printStackTrace();
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
+    /**
+     * 质量压缩方法
+     *
+     * @param image
+     * @return
+     */
+    public static Bitmap compressImage(Bitmap image) {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        int options = 100;
+        while (baos.toByteArray().length / 1024 > 100) {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩
+            baos.reset();//重置baos即清空baos
+            //第一个参数 ：图片格式 ，第二个参数： 图片质量，100为最高，0为最差  ，第三个参数：保存压缩后的数据的流
+            image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
+            options -= 10;//每次都减少10
+        }
+        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
+        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
+        return bitmap;
     }
 
 
