@@ -1,0 +1,4 @@
+#Tue Apr 02 17:12:10 CST 2019
+base.0=C\:\\Users\\kyle_2019\\Desktop\\TempDemo\\CraftShowPics\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
+path.0=classes.dex
+renamed.0=classes.dex
