@@ -76,10 +76,8 @@ public class MainActivity extends AppCompatActivity {
                 setPostRequest("业主项目部负责人");//测试网络请求
             }
         });
-//测试时
         list.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505151721118&di=649c9a43aed72fbc4d99ec1a031510c6&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F015c7d574b9f8f6ac72525aee98351.jpg");
 //        list.add("http://sowcar.com/t6/694/1554169906x1707632075.jpg");
-
         list.add("https://github.com/mingli20181102/CraftShow/raw/master/%E9%A3%8E%E6%99%AF.jpg");
         list.add("https://raw.githubusercontent.com/mingli20181102/CraftShow/master/pic.jpg");
         list.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505151847685&di=c7a4b5d08ec43fa629bcb690039a7629&imgtype=0&src=http%3A%2F%2Fattimg.dospy.com%2Fimg%2Fday_080625%2F20080625_2e91a10c444877e88827vri2ZKdGMvQo.jpg");
