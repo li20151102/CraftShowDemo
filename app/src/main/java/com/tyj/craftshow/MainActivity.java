@@ -159,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
             imageView.setAdjustViewBounds(true);//是否保持宽高比
             imageView.setMaxWidth(1080);
             imageView.setMaxHeight(1920);
-
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             //设置到容器,也就是ViewPager
 //            ImageLoader.getInstance().displayImage(list.get(position%list.size()),imageView);
