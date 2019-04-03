@@ -141,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
             this.list = list;
         }
 
-        //大小
         @Override
         public int getCount() {
             return list.size();
