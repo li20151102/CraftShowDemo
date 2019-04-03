@@ -77,9 +77,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         list.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505151721118&di=649c9a43aed72fbc4d99ec1a031510c6&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F015c7d574b9f8f6ac72525aee98351.jpg");
-//        list.add("http://sowcar.com/t6/694/1554169906x1707632075.jpg");
-        list.add("https://github.com/mingli20181102/CraftShow/raw/master/%E9%A3%8E%E6%99%AF.jpg");
-        list.add("https://raw.githubusercontent.com/mingli20181102/CraftShow/master/pic.jpg");
+        list.add("http://sowcar.com/t6/694/1554169906x1707632075.jpg");
+        list.add("https://raw.githubusercontent.com/mingli20181102/TestPic/master/timg.jpg");
         list.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505151847685&di=c7a4b5d08ec43fa629bcb690039a7629&imgtype=0&src=http%3A%2F%2Fattimg.dospy.com%2Fimg%2Fday_080625%2F20080625_2e91a10c444877e88827vri2ZKdGMvQo.jpg");
         list.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505151825129&di=70bf74b87d8a15cb91a2d79f15ed0eaf&imgtype=0&src=http%3A%2F%2Fattimg.dospy.com%2Fimg%2Fday_081016%2F20081016_fee215664d5740e56c13E2YB8giERFEX.jpg");
         list.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505746504&di=930c4d677a02328a142d6fa85ed14580&imgtype=jpg&er=1&src=http%3A%2F%2Fattimg.dospy.com%2Fimg%2Fday_090113%2F20090113_6ac58b42bea94f0b318e1B6BZb5lPZl5.jpg");
@@ -160,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
             imageView.setAdjustViewBounds(true);//是否保持宽高比
             imageView.setMaxWidth(1080);
             imageView.setMaxHeight(1920);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             //设置到容器,也就是ViewPager
 //            ImageLoader.getInstance().displayImage(list.get(position%list.size()),imageView);
             Glide.with(context).load(list.get(position%list.size())).thumbnail(0.5f).into(imageView);
