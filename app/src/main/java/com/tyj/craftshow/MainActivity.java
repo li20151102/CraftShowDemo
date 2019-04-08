@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.request.RequestOptions;
 import com.tyj.craftshow.http.BaseResponse;
 import com.tyj.craftshow.http.RetrofitUtil;
 import com.tyj.craftshow.http.RxSchedulers;
@@ -165,7 +167,12 @@ public class MainActivity extends AppCompatActivity {
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             //设置到容器,也就是ViewPager
 //            ImageLoader.getInstance().displayImage(list.get(position%list.size()),imageView);
-            Glide.with(context).load(list.get(position%list.size())).thumbnail(0.5f).into(imageView);
+            Glide.with(context).load(list.get(position%list.size()))
+                    .apply(new RequestOptions().placeholder(R.mipmap.ic_launcher))
+                    .apply(new RequestOptions().priority(Priority.IMMEDIATE)) //指定加载的优先级，优先级越高越优先加载
+                    .apply(new RequestOptions().error(R.mipmap.ic_launcher_round)) //指定加载的优先级，优先级越高越优先加载
+                    .thumbnail(0.5f)
+                    .into(imageView);
             container.addView(imageView);
             //返回控件
             return imageView;
@@ -200,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                         mViewPager.setVisibility(View.GONE);
                         try {
                             //不知为何无效getBitmapFormUri
-                            Glide.with(getApplicationContext()).asBitmap().load(getBitmapFormUri(MainActivity.this, Uri.parse("http://sowcar.com/t6/694/1554169906x1707632075.jpg")))
+                            Glide.with(getApplicationContext()).load(getBitmapFormUri(MainActivity.this, Uri.parse("http://sowcar.com/t6/694/1554169906x1707632075.jpg")))
                                     .into(imageView);
                         } catch (IOException e) {
                             e.printStackTrace();
