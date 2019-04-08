@@ -2,7 +2,9 @@ package com.tyj.craftshow;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -16,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -69,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mViewPager.setVisibility(View.VISIBLE);
+        inItView();
+    }
+
+    public void inItView() {
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
-
             }
 
             @Override
@@ -134,7 +140,9 @@ public class MainActivity extends AppCompatActivity {
         });
         //第一次显示小白点
         mLinearLayout.getChildAt(mNum).setEnabled(true);
+
     }
+
 
     /**
      * 适配器
@@ -164,6 +172,8 @@ public class MainActivity extends AppCompatActivity {
             imageView.setAdjustViewBounds(true);//是否保持宽高比
             imageView.setMaxWidth(1080);
             imageView.setMaxHeight(1920);
+//            ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(1000,1000);
+//            imageView.setLayoutParams(lp);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             //设置到容器,也就是ViewPager
 //            ImageLoader.getInstance().displayImage(list.get(position%list.size()),imageView);
@@ -173,6 +183,15 @@ public class MainActivity extends AppCompatActivity {
                     .apply(new RequestOptions().error(R.mipmap.ic_launcher_round)) //指定加载的优先级，优先级越高越优先加载
                     .thumbnail(0.5f)
                     .into(imageView);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("TAG",position+"");
+                    if(position==3){
+                        startActivity(new Intent(MainActivity.this,Main2Activity.class));
+                    }
+                }
+            });
             container.addView(imageView);
             //返回控件
             return imageView;
@@ -182,6 +201,14 @@ public class MainActivity extends AppCompatActivity {
         public void destroyItem(ViewGroup container, int position, Object object) {
             //从容器中删除
             container.removeView((View)object);
+        }
+    }
+
+    public class MyBroadCast extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String D = intent.getStringExtra("hh");
+            Log.e("TAG","DDD"+D);
         }
     }
 
