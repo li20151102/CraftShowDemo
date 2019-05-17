@@ -1,4 +1,4 @@
-package com.tyj.craftshow;
+package com.tyj.craftshow.base;
 
 import android.app.Activity;
 import android.app.Application;

@@ -7,10 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.RectF;
 import android.net.Uri;
-import android.os.Environment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +15,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,15 +22,13 @@ import android.widget.LinearLayout;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
+import com.tyj.craftshow.activity.BroadCastMain2Activity;
 import com.tyj.craftshow.http.BaseResponse;
 import com.tyj.craftshow.http.RetrofitUtil;
-import com.tyj.craftshow.http.RxSchedulers;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -46,6 +40,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+
+import static com.tyj.craftshow.http.RxSchedulers.compose;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -188,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Log.e("TAG",position+"");
                     if(position==3){
-                        startActivity(new Intent(MainActivity.this,Main2Activity.class));
+                        startActivity(new Intent(MainActivity.this, BroadCastMain2Activity.class));
                     }
                 }
             });
@@ -217,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         Map<String,Object> map = new HashMap<>(15);
         map.put("userType",v);
         RetrofitUtil.getApiService().queryUserPermissionInfo(map)
-                .compose(RxSchedulers.compose())
+                .compose(compose())
                 .subscribe(new Observer<BaseResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {

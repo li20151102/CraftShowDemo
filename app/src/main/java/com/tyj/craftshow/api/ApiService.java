@@ -1,4 +1,4 @@
-package com.tyj.craftshow;
+package com.tyj.craftshow.api;
 
 import com.tyj.craftshow.http.BaseResponse;
 
@@ -21,4 +21,9 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("Login!getRolePermission.action")
     Observable<BaseResponse> queryUserPermissionInfo(@FieldMap Map<String, Object> map);
+
+    //todo 获取登录用户数据信息
+    @FormUrlEncoded
+    @POST("Login!getRolePermission.action")
+    Observable<BaseResponse> postLoginInfo(@FieldMap Map<String, Object> map);
 }

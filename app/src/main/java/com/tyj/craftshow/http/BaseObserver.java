@@ -7,7 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.JsonParseException;
-import com.tyj.craftshow.AppApplication;
+import com.tyj.craftshow.base.AppApplication;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;

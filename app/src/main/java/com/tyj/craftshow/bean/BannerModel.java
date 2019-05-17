@@ -1,4 +1,4 @@
-package com.tyj.craftshow;
+package com.tyj.craftshow.bean;
 
 /**
  * Created by kyle on 2019/2/11.

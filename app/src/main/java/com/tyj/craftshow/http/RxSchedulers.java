@@ -3,7 +3,7 @@ package com.tyj.craftshow.http;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.tyj.craftshow.AppApplication;
+import com.tyj.craftshow.base.AppApplication;
 
 import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;

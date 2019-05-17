@@ -2,9 +2,9 @@ package com.tyj.craftshow.http;
 
 
 
-import com.tyj.craftshow.ApiConstants;
-import com.tyj.craftshow.ApiService;
-import com.tyj.craftshow.AppApplication;
+import com.tyj.craftshow.api.ApiConstants;
+import com.tyj.craftshow.api.ApiService;
+import com.tyj.craftshow.base.AppApplication;
 import com.tyj.craftshow.http.fastjson.FastJsonConverterFactory;
 
 import java.io.File;

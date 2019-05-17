@@ -22,7 +22,7 @@ import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
 import android.telephony.TelephonyManager;
 
-import com.tyj.craftshow.AppApplication;
+import com.tyj.craftshow.base.AppApplication;
 
 import java.util.HashMap;
 import java.util.Map;
