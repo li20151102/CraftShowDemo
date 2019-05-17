@@ -17,6 +17,9 @@ import com.tyj.craftshow.base.BaseActivity;
 import com.tyj.craftshow.http.BaseResponse;
 import com.tyj.craftshow.http.RetrofitUtil;
 import com.tyj.craftshow.http.RxSchedulers;
+import com.tyj.craftshow.util.DialogUtil;
+import com.tyj.craftshow.util.RxClickUtil;
+import com.tyj.craftshow.util.ToastUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,9 +54,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         return R.layout.activity_login;
     }
 
+    @SuppressLint("CheckResult")
     @Override
     protected void inItView(Bundle savedInstanceState) {
 
+//        RxClickUtil.clicks(logins).subscribe(o -> { ToastUtil.showLongToast("heheheh"); });
     }
 
 
@@ -70,9 +75,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     Toast.makeText(getApplicationContext(),"密码不能为空",Toast.LENGTH_LONG).show();
                     return;
                 }else {
-                    finish();
                     setPostLogin();
-                    startActivity(new Intent(this, MainActivity.class));
                 }
                 break;
             case R.id.tv_log_forgotPassword:
@@ -87,6 +90,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     @SuppressLint("CheckResult")
     public void setPostLogin(){//登录请求
+        DialogUtil.showWaittingDialog(LoginActivity.this);
         Map<String,Object> map = new HashMap<>(10);
         map.put("user","12345678");
         map.put("password","111222");
@@ -96,10 +100,21 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 .subscribe(baseResponse -> {
                     if(baseResponse!=null){
                         baseResponse.getData();
+
+                        finish();
+                        startActivity(new Intent(this, MainActivity.class));
                     }
+                    DialogUtil.closeWaittingDialog();
                 },throwable -> {
-                    Log.e("TAG", throwable.getMessage());
+                    DialogUtil.closeWaittingDialog();
+                    Log.e("TAG_LoginActivity", throwable.getMessage());
                 });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
 
     }
 }
