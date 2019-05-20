@@ -17,6 +17,7 @@ import com.tyj.craftshow.base.BaseActivity;
 import com.tyj.craftshow.http.BaseResponse;
 import com.tyj.craftshow.http.RetrofitUtil;
 import com.tyj.craftshow.http.RxSchedulers;
+import com.tyj.craftshow.model.DemoActivity;
 import com.tyj.craftshow.util.DialogUtil;
 import com.tyj.craftshow.util.RxClickUtil;
 import com.tyj.craftshow.util.ToastUtil;
@@ -80,23 +81,33 @@ public class LoginActivity extends BaseActivity {
 
     @SuppressLint("CheckResult")
     public void setPostLogin(){//登录请求
-        DialogUtil.showWaittingDialog(LoginActivity.this);
-        Map<String,Object> map = new HashMap<>(10);
-        map.put("user","12345678");
-        map.put("password","111222");
-        RetrofitUtil.getApiService().postLoginInfo(map)
+//        DialogUtil.showWaittingDialog(LoginActivity.this);
+        Map<String,Object> map = new HashMap<>(15);
+        map.put("project.projectId", "");
+        map.put("project.projectName", "");
+        map.put("project.projectDefinition", "");
+        map.put("project.confirmStatus", "");
+        map.put("project.isSub", "");
+        map.put("project.level", 1);
+        map.put("project.parentId", 1);
+        map.put("project.parentName", "");
+        map.put("project.deleteMark", "");
+        map.put("page", 1);
+        map.put("limit", 100);
+        RetrofitUtil.getApiService().queryScreenProjectInfo(map)
                 .compose(compose())
                 .compose(bindToLifecycle())
                 .subscribe(baseResponse -> {
                     if(baseResponse!=null){
                         baseResponse.getData();
 
+                        Log.e("LOGIN",baseResponse.getData().toString());
 //                        finish();
 //                        startActivity(new Intent(this, MainActivity.class));
                     }
-                    DialogUtil.closeWaittingDialog();
+//                    DialogUtil.closeWaittingDialog();
                 },throwable -> {
-                    DialogUtil.closeWaittingDialog();
+//                    DialogUtil.closeWaittingDialog();
                     Log.e("TAG_LoginActivity", throwable.getMessage());
                 });
         finish();

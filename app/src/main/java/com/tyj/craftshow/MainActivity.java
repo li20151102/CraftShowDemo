@@ -25,6 +25,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.tyj.craftshow.activity.BroadCastMain2Activity;
 import com.tyj.craftshow.http.BaseResponse;
 import com.tyj.craftshow.http.RetrofitUtil;
+import com.tyj.craftshow.model.DemoActivity;
+import com.tyj.craftshow.util.RxClickUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -71,12 +73,10 @@ public class MainActivity extends AppCompatActivity {
         inItView();
     }
 
+    @SuppressLint("CheckResult")
     public void inItView() {
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setPostRequest("超级管理员");//测试网络请求
-            }
+        RxClickUtil.clicks(btn1).subscribe(o -> {
+            startActivity(new Intent(this, DemoActivity.class));
         });
 
         btn2.setOnClickListener(new View.OnClickListener() {

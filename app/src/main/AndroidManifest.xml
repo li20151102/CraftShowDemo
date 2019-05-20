@@ -29,6 +29,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".activity.BroadCastMain2Activity" />
         <activity android:name=".activity.EventBusMain3Activity"/>
+        <activity android:name=".model.DemoActivity"/>
 
     </application>
 

@@ -1,7 +1,9 @@
 package com.tyj.craftshow.api;
 
+import com.tyj.craftshow.bean.ProjectDataBean;
 import com.tyj.craftshow.http.BaseResponse;
 
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -26,4 +28,9 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("Login!getRolePermission.action")
     Observable<BaseResponse> postLoginInfo(@FieldMap Map<String, Object> map);
+
+    //todo 获取项目库列表数据信息
+    @FormUrlEncoded
+    @POST("ProjectAction!queryScreenProject.action")
+    Observable<BaseResponse<List<ProjectDataBean>>> queryScreenProjectInfo(@FieldMap Map<String, Object> map);
 }

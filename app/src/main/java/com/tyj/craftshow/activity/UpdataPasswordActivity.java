@@ -31,7 +31,6 @@ public class UpdataPasswordActivity extends BaseActivity {
 
     @Override
     protected void inItView(Bundle savedInstanceState) {
-
         onClicks();
     }
 
