@@ -36,7 +36,7 @@ import static com.tyj.craftshow.http.RxSchedulers.compose;
  * @package com.tyj.craftshow
  * @fileName LoginActivity
  */
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends BaseActivity {
 
     @BindView(R.id.et_log_name)
     EditText mName;
@@ -58,34 +58,24 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void inItView(Bundle savedInstanceState) {
 
-//        RxClickUtil.clicks(logins).subscribe(o -> { ToastUtil.showLongToast("heheheh"); });
-    }
-
-
-    @Override
-    @OnClick({R.id.btn_login,R.id.tv_log_forgotPassword,R.id.tv_log_register})
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.btn_login:
-                if(TextUtils.isEmpty(mName.getText().toString().trim())){
-                    Toast.makeText(getApplicationContext(),"用户名不能为空",Toast.LENGTH_LONG).show();
-                    return;
-                }
-                if(TextUtils.isEmpty(mPwd.getText().toString().trim())){
-                    Toast.makeText(getApplicationContext(),"密码不能为空",Toast.LENGTH_LONG).show();
-                    return;
-                }else {
-                    setPostLogin();
-                }
-                break;
-            case R.id.tv_log_forgotPassword:
-                startActivity(new Intent(this, UpdataPasswordActivity.class));
-                break;
-            case R.id.tv_log_register:
-                startActivity(new Intent(this, RegisterActivity.class));
-                break;
-        }
-
+        RxClickUtil.clicks(logins).subscribe(o -> {
+            if(TextUtils.isEmpty(mName.getText().toString().trim())){
+                Toast.makeText(getApplicationContext(),"用户名不能为空",Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(TextUtils.isEmpty(mPwd.getText().toString().trim())){
+                Toast.makeText(getApplicationContext(),"密码不能为空",Toast.LENGTH_LONG).show();
+                return;
+            }else {
+                setPostLogin();
+            }
+        });
+        RxClickUtil.clicks(mFpwd).subscribe(o -> {
+            startActivity(new Intent(this, UpdataPasswordActivity.class));
+        });
+        RxClickUtil.clicks(mRegist).subscribe(o -> {
+            startActivity(new Intent(this, RegisterActivity.class));
+        });
     }
 
     @SuppressLint("CheckResult")
@@ -101,14 +91,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     if(baseResponse!=null){
                         baseResponse.getData();
 
-                        finish();
-                        startActivity(new Intent(this, MainActivity.class));
+//                        finish();
+//                        startActivity(new Intent(this, MainActivity.class));
                     }
                     DialogUtil.closeWaittingDialog();
                 },throwable -> {
                     DialogUtil.closeWaittingDialog();
                     Log.e("TAG_LoginActivity", throwable.getMessage());
                 });
+        finish();
+        startActivity(new Intent(this, MainActivity.class));
 
     }
 

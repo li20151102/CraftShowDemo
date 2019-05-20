@@ -1,24 +1,25 @@
 package com.tyj.craftshow.activity;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.tyj.craftshow.R;
 import com.tyj.craftshow.base.BaseActivity;
+import com.tyj.craftshow.util.RxClickUtil;
 import com.tyj.craftshow.util.ToastUtil;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 /**
  * @author create by kyle_2019 on 2019/5/17 9:48
  * @package com.tyj.craftshow
  * @fileName RegisterActivity
  */
-public class RegisterActivity extends BaseActivity implements View.OnClickListener {
+public class RegisterActivity extends BaseActivity{
     @BindView(R.id.et_regist_name)
     EditText mName;
     @BindView(R.id.et_regist_password)
@@ -34,20 +35,18 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
 
     @Override
     protected void inItView(Bundle savedInstanceState) {
-
+        OnClicks();
     }
 
-    @Override
-    @OnClick({R.id.btn_register,R.id.tv_regist_login})
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.btn_register:
-                ToastUtil.showLongToast("sdfhh");
-                break;
-            case R.id.tv_regist_login:
-
-                break;
-        }
-
+    @SuppressLint("CheckResult")
+    private void OnClicks() {
+        RxClickUtil.clicks(mRegist).subscribe(o -> {
+            ToastUtil.showLongToast("注册");
+        });
+        RxClickUtil.clicks(mLogin).subscribe(o -> {
+            finish();
+            startActivity(new Intent(this, LoginActivity.class));
+        });
     }
+
 }
