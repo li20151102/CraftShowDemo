@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,13 +15,20 @@ import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.tyj.craftshow.R;
+import com.tyj.craftshow.activity.LoginActivity;
 import com.tyj.craftshow.base.BaseActivity;
+import com.tyj.craftshow.http.RetrofitUtil;
+import com.tyj.craftshow.util.DialogUtil;
 import com.tyj.craftshow.util.RxClickUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
+
+import static com.tyj.craftshow.http.RxSchedulers.compose;
 
 /**
  * @author create by kyle_2019 on 2019/5/20 10:18
@@ -57,6 +65,7 @@ public class DemoActivity extends BaseActivity {
 
     @Override
     protected void inItView(Bundle savedInstanceState) {
+        setPostData();
         initData();
         initView();
     }
@@ -270,5 +279,37 @@ public class DemoActivity extends BaseActivity {
                     break;
             }
         }
+    }
+
+    @SuppressLint("CheckResult")
+    public void setPostData(){//请求数据
+        DialogUtil.showWaittingDialog(DemoActivity.this);
+        Map<String,Object> map = new HashMap<>(15);
+        map.put("project.projectId", "");
+        map.put("project.projectName", "");
+        map.put("project.projectDefinition", "");
+        map.put("project.confirmStatus", "");
+        map.put("project.isSub", "");
+        map.put("project.level", 1);
+        map.put("project.parentId", 1);
+        map.put("project.parentName", "");
+        map.put("project.deleteMark", "");
+        map.put("page", 1);
+        map.put("limit", 100);
+        RetrofitUtil.getApiService().queryScreenProjectInfo(map)
+                .compose(compose())
+                .compose(bindToLifecycle())
+                .subscribe(baseResponse -> {
+                    if(baseResponse!=null){
+                        baseResponse.getData();
+
+                        Log.e("LOGIN",baseResponse.getData().toString());
+                    }
+                    DialogUtil.closeWaittingDialog();
+                },throwable -> {
+                    DialogUtil.closeWaittingDialog();
+                    Log.e("TAG_LoginActivity", throwable.getMessage());
+                });
+
     }
 }

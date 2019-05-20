@@ -113,4 +113,20 @@ public class ProjectDataBean implements Serializable {
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
+
+    @Override
+    public String toString() {
+        return "ProjectDataBean{" +
+                "confirmStatus=" + confirmStatus +
+                ", deleteMark=" + deleteMark +
+                ", investment=" + investment +
+                ", isSub=" + isSub +
+                ", level=" + level +
+                ", parentId='" + parentId + '\'' +
+                ", parentName='" + parentName + '\'' +
+                ", projectDefinition='" + projectDefinition + '\'' +
+                ", projectId='" + projectId + '\'' +
+                ", projectName='" + projectName + '\'' +
+                '}';
+    }
 }
