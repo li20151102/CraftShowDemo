@@ -5,28 +5,31 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
-import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
 import com.tyj.craftshow.R;
-import com.tyj.craftshow.activity.LoginActivity;
+import com.tyj.craftshow.adapter.ProTitleAdapter;
+import com.tyj.craftshow.adapter.ProjectDataAdapter;
 import com.tyj.craftshow.base.BaseActivity;
+import com.tyj.craftshow.bean.ProTitleBean;
+import com.tyj.craftshow.bean.ProjectDataBean;
+import com.tyj.craftshow.http.BaseResponse;
 import com.tyj.craftshow.http.RetrofitUtil;
-import com.tyj.craftshow.util.DialogUtil;
 import com.tyj.craftshow.util.RxClickUtil;
+import com.tyj.craftshow.util.ToastUtil;
+import com.tyj.craftshow.util.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 import static com.tyj.craftshow.http.RxSchedulers.compose;
 
@@ -36,27 +39,20 @@ import static com.tyj.craftshow.http.RxSchedulers.compose;
  * @fileName DemoActivity
  */
 public class DemoActivity extends BaseActivity {
+    private int page = 1;
+    private static final String TAG = "ProjectLibManagementAci";
+    private ProjectDataAdapter mProLitsAdapter;
+    private ProTitleAdapter mTitleAdapter;
+    private Disposable mDispose = null;
+    private boolean isLoading = false;
 
-    /**
-     * 标题TextView
-     */
-    private TextView mTitle;
     @BindView(R.id.iv_back)
     ImageView mback;
 
-    /**
-     * 头部导航RecyclerView
-     */
-    private RecyclerView headerView;
-    private BaseQuickAdapter<TreeNode, BaseViewHolder> headerAdapter;
-    private List<TreeNode> headerData = new ArrayList<>();
-
-    /**
-     * 组织架构显示RecyclerView
-     */
-    private RecyclerView mRecyclerView;
-    private DemoAdapter mAdapter;
-    private Group root;
+    @BindView(R.id.title_rcv)
+    RecyclerView mTitleRecyclerView;
+    @BindView(R.id.mRecyclerView)
+    RecyclerView mRecyclerView;
 
     @Override
     protected int setLayout() {
@@ -65,250 +61,158 @@ public class DemoActivity extends BaseActivity {
 
     @Override
     protected void inItView(Bundle savedInstanceState) {
-        setPostData();
-        initData();
         initView();
     }
 
     @SuppressLint("CheckResult")
-    private void initData() {
-        RxClickUtil.clicks(mback).subscribe(o -> finish());
-        //构造根节点
-        root = new Group();
-//        root.setName("组织架构");
-
-        Group group0 = new Group();
-        group0.setName("组织架构");
-        group0.setNumber(100);
-        root.add(group0);
-
-        //二级节点
-        Group group1 = new Group();
-        group1.setName("杭州总部");
-        group1.setNumber(70);
-        group0.add(group1);
-        buildDepartment(group1, 7);
-
-        Group group2 = new Group();
-        group2.setName("长沙分公司");
-        group2.setNumber(30);
-        group0.add(group2);
-        buildDepartment(group2, 3);
-
-    }
-
-    private void buildDepartment(Group group, int count) {
-        for (int i = 1; i <= count; i++) {
-            Group g = new Group();
-            g.setName("长沙研发" + i + "部");
-            g.setNumber(10);
-            group.add(g);
-            buildDepartments(g, 10);
-        }
-
-//        Member member = new Member();
-//        member.setName("洋洋CTO");
-//        member.setJobTitle("总监一职");
-//        group.add(member);
-    }
-
-    private void buildDepartments(Group group, int count) {
-        for (int i = 1; i <= count; i++) {
-            Group g = new Group();
-            g.setName("杭州测试" + i + "部");
-            g.setNumber(10);
-            group.add(g);
-
-            buildDepartmentd(g, 20);
-        }
-
-//        Member member = new Member();
-//        member.setName("洋洋CTO");
-//        member.setJobTitle("总监一职");
-//        group.add(member);
-    }
-    private void buildDepartmentd(Group group, int count) {
-        for (int i = 1; i <= count; i++) {
-            Group g = new Group();
-            g.setName("西湖实施" + i + "部");
-            g.setNumber(10);
-            group.add(g);
-
-            buildMember(g, 20);
-        }
-
-//        Member member = new Member();
-//        member.setName("洋洋CTO");
-//        member.setJobTitle("总监一职");
-//        group.add(member);
-    }
-
-    private void buildMember(Group group, int count) {
-        for (int i = 1; i <= count; i++) {
-            Member member = new Member();
-            member.setName("帅帅" + i + "号");
-            member.setJobTitle("码农一枚");
-
-            group.add(member);
-        }
-    }
-
     private void initView() {
-//        mTitle = findViewById(R.id.tv_bar_title);
-        mRecyclerView = findViewById(R.id.mRecyclerView);
+
+        initRecyclerView();
+        initTitleRecyclerView();
+        setPostData(1, "", new ProTitleBean("市级项目", "none", 0), false);
+        RxClickUtil.clicks(mback).subscribe(o -> {
+            finish();
+        });
+
+    }
+    private void initRecyclerView() {
 
         //设置布局管理器
+        mProLitsAdapter = new ProjectDataAdapter(R.layout.item_model_group);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        mAdapter = new DemoAdapter(null);
-        mAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                TreeNode item = mAdapter.getItem(position);
-                if (item == null)
-                    return;
-
-                if (item.getModel() instanceof Group)//只有group,才能展开
-                    selectNode(item);
-                else if (item.getModel() instanceof Member)
-                    Toast.makeText(DemoActivity.this, "点击一个成员:" + ((Member) item).getName(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        mAdapter.bindToRecyclerView(mRecyclerView);
-
-        //初始化头部导航
-        headerView = (RecyclerView) LayoutInflater.from(this).inflate(R.layout.layout_model_header, mRecyclerView, false);
-        headerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-        headerAdapter = new BaseQuickAdapter<TreeNode, BaseViewHolder>(R.layout.item_model_arrow_group) {
-            @Override
-            protected void convert(BaseViewHolder helper, TreeNode item) {
-                //这里都是group,直接强转
-                Group group = item.getModel();
-                helper.setText(R.id.tv_name, group.getName());
-
-                if (helper.getAdapterPosition() == headerAdapter.getData().size() - 1) {
-                    helper.setTextColor(R.id.tv_name, 0xff000000);
-                    helper.setGone(R.id.iv_arrow, false);
-                } else {
-                    helper.setTextColor(R.id.tv_name, 0xff999999);
-                    helper.setVisible(R.id.iv_arrow, true);
+        mRecyclerView.setAdapter(mProLitsAdapter);
+        mProLitsAdapter.setOnItemClickListener((adapter, view, position) -> {
+            ProjectDataBean item = mProLitsAdapter.getItem(position);
+            List<ProTitleBean> list = mTitleAdapter.getData();
+            if (item.getType() == 1) {
+                ToastUtil.showLongToast("详情");
+            } else {
+                if (!list.isEmpty()) {
+                    ProTitleBean titleLevel = list.get(list.size() - 1);
+                    int level = item.getLevel();
+                    if (titleLevel.getLevel() == level) {
+                        Log.e(TAG, "是点击了同一个列表的两个不同实体导致的");
+                        return;
+                    }
                 }
+                setPostData(item.getLevel() + 1, item.getId(), new ProTitleBean(item.getName(), item.getId(), item.getLevel()), false);
             }
-        };
-        headerAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                if (position == 0) {
-                    finish();
-                } else {
-                    TreeNode item = headerAdapter.getItem(position);
-                    selectNode(item);
-                }
-            }
+
         });
-        headerAdapter.bindToRecyclerView(headerView);
-        headerAdapter.setNewData(headerData);
-
-        //设置头部到整个页面
-        mAdapter.setHeaderView(headerView);
-
-        selectNode(root.getChildren().get(0));
     }
 
-    private void selectNode(TreeNode node) {
-        List<TreeNode> children = node.getChildren();
-        mAdapter.setNewData(children);
+    private void initTitleRecyclerView() {
+        mTitleRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayout.HORIZONTAL, false));
+        mTitleAdapter = new ProTitleAdapter(R.layout.item_model_title_group);
+        mTitleRecyclerView.setAdapter(mTitleAdapter);
+        mTitleAdapter.setOnItemClickListener((adapter, view, position) -> {
+            if (position == mTitleAdapter.getData().size() - 1) {
+                Log.e(TAG, "点击的时标题的最后面一个，可以不用管");
+                return;
+            }
+            mProLitsAdapter.setNewData(new ArrayList<>());
+            io.reactivex.Observable.just(1).delay(600, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(integer -> {
+                        if (isLoading) {
+                            return;
+                        }
 
-        //重置Header的数据
-        headerData.clear();
-        while (node != null) {
-            Group group = node.getModel();
-            headerData.add(0, group);
-
-            node = node.getParent();
-        }
-        headerAdapter.notifyDataSetChanged();
-
-        //取头部数据最后一条显示标题
-//        TreeNode treeNode = headerData.get(headerData.size() - 1);
-//        Group group = treeNode.getModel();
-//        mTitle.setText(group.getName());
+                        if (position == 0) {
+                            setPostData(1, "", new ProTitleBean("市级项目", "none", 0), false);
+                        } else {
+                            ProTitleBean item = mTitleAdapter.getItem(position);
+                            List<ProTitleBean> list = new ArrayList<>();
+                            for (int i = 0; i < position + 1; i++) {
+                                list.add(mTitleAdapter.getItem(i));
+                            }
+                            mTitleAdapter.setNewData(list);
+                            setPostData(item.getLevel() + 1, item.getTitleId(), null, true);
+                        }
+                    });
+        });
     }
 
     @Override
     public void onBackPressed() {
-        if (headerData.size() > 2) {
-            headerAdapter.remove(headerData.size() - 1);
-
-            TreeNode treeNode = headerData.get(headerData.size() - 1);
-            selectNode(treeNode);
-        } else {
+        if (isLoading) {
+            return;
+        }
+        List<ProTitleBean> data = mTitleAdapter.getData();
+        if (data.isEmpty() || data.size() == 1) {
             finish();
-        }
-    }
-
-    public static class DemoAdapter extends BaseMultiItemQuickAdapter<TreeNode, BaseViewHolder> {
-
-        /**
-         * Same as QuickAdapter#QuickAdapter(Context,int) but with
-         * some initialization data.
-         *
-         * @param data A new list is created out of this one to avoid mutable list
-         */
-        public DemoAdapter(List<TreeNode> data) {
-            super(data);
-
-            addItemType(NodeType.TYPE_GROUP, R.layout.item_model_group);
-            addItemType(NodeType.TYPE_MEMBER, R.layout.item_model_member);
-        }
-
-        @Override
-        protected void convert(BaseViewHolder helper, TreeNode item) {
-            switch (item.getItemType()) {
-                case NodeType.TYPE_GROUP:
-                    Group group = (Group) item;
-                    String text = String.format("%s(%d)", group.getName(), group.getNumber());
-                    helper.setText(R.id.tv_name, text);
-                    break;
-                case NodeType.TYPE_MEMBER:
-                    Member member = (Member) item;
-                    helper.setText(R.id.tv_name, member.getName());
-                    helper.setText(R.id.tv_job, member.getJobTitle());
-                    break;
-                default:
-                    break;
+        } else {
+            mProLitsAdapter.setNewData(new ArrayList<>());
+            if (data.size() > 2) {
+                ProTitleBean proTitleEntity = data.get(data.size() - 2);
+                setPostData(proTitleEntity.getLevel() + 1, proTitleEntity.getTitleId(), null, true);
+            } else {
+                setPostData(1, "", null, true);
             }
+            data.remove(data.size() - 1);
+            mTitleAdapter.setNewData(data);
         }
     }
 
     @SuppressLint("CheckResult")
-    public void setPostData(){//请求数据
-        DialogUtil.showWaittingDialog(DemoActivity.this);
+    public void setPostData(int level, String id, ProTitleBean title, boolean isTitleClick){//请求数据
+        if (isLoading) {
+            return;
+        } else {
+            isLoading = true;
+        }
+        showDialog("正在加载数据,请稍后...");
         Map<String,Object> map = new HashMap<>(15);
-        map.put("project.projectId", "");
-        map.put("project.projectName", "");
-        map.put("project.projectDefinition", "");
-        map.put("project.confirmStatus", "");
-        map.put("project.isSub", "");
-        map.put("project.level", 1);
-        map.put("project.parentId", 1);
-        map.put("project.parentName", "");
-        map.put("project.deleteMark", "");
-        map.put("page", 1);
-        map.put("limit", 100);
+        map.put("vo.level", level);
+        map.put("vo.id", id);
+        map.put("page", page);
+        map.put("limit", 50);
         RetrofitUtil.getApiService().queryScreenProjectInfo(map)
                 .compose(compose())
                 .compose(bindToLifecycle())
-                .subscribe(baseResponse -> {
-                    if(baseResponse!=null){
-                        baseResponse.getData();
+                .subscribe(new Observer<BaseResponse<List<ProjectDataBean>>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-                        Log.e("LOGIN",baseResponse.getData().toString());
                     }
-                    DialogUtil.closeWaittingDialog();
-                },throwable -> {
-                    DialogUtil.closeWaittingDialog();
-                    Log.e("TAG_LoginActivity", throwable.getMessage());
+
+                    @Override
+                    public void onNext(BaseResponse<List<ProjectDataBean>> listBaseResponse) {
+                        isLoading = false;
+                        if (listBaseResponse.getData() != null) {
+                            if (listBaseResponse.getData().isEmpty()) {
+                                ToastUtils.showToast("您点击的 “" + title.getTitleName() + "”没有下一层数据哦!");
+                                return;
+                            }
+                            mProLitsAdapter.setNewData(listBaseResponse.getData());
+                            if (!isTitleClick) {
+                                if ("none".equals(title.getTitleId())) {
+                                    List<ProTitleBean> list = new ArrayList<>();
+                                    list.add(title);
+                                    mTitleAdapter.setNewData(list);
+                                } else {
+                                    List<ProTitleBean> data = mTitleAdapter.getData();
+                                    data.add(title);
+                                    mTitleAdapter.setNewData(data);
+                                }
+                            }
+                        } else {
+                            mProLitsAdapter.setNewData(new ArrayList<>());
+                        }
+                        dismissDialog();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        dismissDialog();
+                        isLoading = false;
+                        Log.e("DemoActivit",e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        dismissDialog();
+                        isLoading = false;
+                    }
                 });
 
     }

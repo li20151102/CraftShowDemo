@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
@@ -33,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +48,9 @@ import io.reactivex.disposables.Disposable;
 import static com.tyj.craftshow.http.RxSchedulers.compose;
 
 public class MainActivity extends AppCompatActivity {
+
+    @BindView(R.id.tv_tvDate)
+    TextView tvDate;
 
     @BindView(R.id.btn_button1)
     Button btn1;
@@ -75,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     public void inItView() {
+
+        long currentTime = System.currentTimeMillis();
+        String timeNow = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(currentTime);
+        tvDate.setText(timeNow);
+
         RxClickUtil.clicks(btn1).subscribe(o -> {
             startActivity(new Intent(this, DemoActivity.class));
         });
@@ -85,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
                 setPostRequest("业主项目部负责人");//测试网络请求
             }
         });
-        list.add("http://sowcar.com/t6/694/1554169906x1707632075.jpg");
         list.add("https://github.com/li20151102/TestPic/raw/master/11.jpg");
         list.add("https://github.com/li20151102/TestPic/raw/master/12.jpg");
         list.add("https://github.com/li20151102/TestPic/raw/master/13.jpeg");

@@ -11,59 +11,27 @@ public class ProjectDataBean implements Serializable {
 
 
     /**
-     * confirmStatus : 1
-     * deleteMark : 0
-     * investment : 5591
-     * isSub : 0
-     * level : 1
-     * parentId : 1
-     * parentName :
-     * projectDefinition : 7152942a-7552-11e9-a7f6-7cd30ab8a5d8
-     * projectId : 71529417-7552-11e9-a7f6-7cd30ab8a5d8
-     * projectName : 测试
+     * id : b7e8acf3-7878-11e9-a7f6-7cd30ab8a5d8
+     * level : 3
+     * money : 0
+     * name : 哈哈
+     * type : 0
+     * “confirmStatus”: 1,
      */
 
-    private int confirmStatus;
-    private int deleteMark;
-    private int investment;
-    private int isSub;
+    private String id;
     private int level;
-    private String parentId;
-    private String parentName;
-    private String projectDefinition;
-    private String projectId;
-    private String projectName;
+    private int money;
+    private String name;
+    private int confirmStatus;
+    private int type;
 
-    public int getConfirmStatus() {
-        return confirmStatus;
+    public String getId() {
+        return id;
     }
 
-    public void setConfirmStatus(int confirmStatus) {
-        this.confirmStatus = confirmStatus;
-    }
-
-    public int getDeleteMark() {
-        return deleteMark;
-    }
-
-    public void setDeleteMark(int deleteMark) {
-        this.deleteMark = deleteMark;
-    }
-
-    public int getInvestment() {
-        return investment;
-    }
-
-    public void setInvestment(int investment) {
-        this.investment = investment;
-    }
-
-    public int getIsSub() {
-        return isSub;
-    }
-
-    public void setIsSub(int isSub) {
-        this.isSub = isSub;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int getLevel() {
@@ -74,59 +42,35 @@ public class ProjectDataBean implements Serializable {
         this.level = level;
     }
 
-    public String getParentId() {
-        return parentId;
+    public int getMoney() {
+        return money;
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public void setMoney(int money) {
+        this.money = money;
     }
 
-    public String getParentName() {
-        return parentName;
+    public String getName() {
+        return name;
     }
 
-    public void setParentName(String parentName) {
-        this.parentName = parentName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getProjectDefinition() {
-        return projectDefinition;
+    public int getType() {
+        return type;
     }
 
-    public void setProjectDefinition(String projectDefinition) {
-        this.projectDefinition = projectDefinition;
+    public void setType(int type) {
+        this.type = type;
     }
 
-    public String getProjectId() {
-        return projectId;
+    public int getConfirmStatus() {
+        return confirmStatus;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
-    @Override
-    public String toString() {
-        return "ProjectDataBean{" +
-                "confirmStatus=" + confirmStatus +
-                ", deleteMark=" + deleteMark +
-                ", investment=" + investment +
-                ", isSub=" + isSub +
-                ", level=" + level +
-                ", parentId='" + parentId + '\'' +
-                ", parentName='" + parentName + '\'' +
-                ", projectDefinition='" + projectDefinition + '\'' +
-                ", projectId='" + projectId + '\'' +
-                ", projectName='" + projectName + '\'' +
-                '}';
+    public void setConfirmStatus(int confirmStatus) {
+        this.confirmStatus = confirmStatus;
     }
 }

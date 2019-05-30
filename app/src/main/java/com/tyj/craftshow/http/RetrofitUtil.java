@@ -106,7 +106,7 @@ public class RetrofitUtil {
                 if (apiService == null) {
                     apiService = new Retrofit
                             .Builder()
-                            //不要动这里的url设置代码，如果你想改服务器地址，请到 AppApplication 的SiteControl.withBaseUrl里面修改
+                            //这里的url设置代码，是改你想需要服务器的地址
                             .baseUrl(ApiConstants.TEST_SERVER_ADDRESS)
                             .client(httpClient)
                             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

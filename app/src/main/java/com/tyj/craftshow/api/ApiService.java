@@ -26,11 +26,15 @@ public interface ApiService {
 
     //todo 获取登录用户数据信息
     @FormUrlEncoded
-    @POST("Login!getRolePermission.action")
+    @POST("check")
     Observable<BaseResponse> postLoginInfo(@FieldMap Map<String, Object> map);
+    //todo 新增用户数据信息
+    @FormUrlEncoded
+    @POST("insert")
+    Observable<BaseResponse> postInsertInfo(@FieldMap Map<String, Object> map);
 
     //todo 获取项目库列表数据信息
     @FormUrlEncoded
-    @POST("ProjectAction!queryScreenProject.action")
+    @POST("MonProjectAction!getQueryVo.action")
     Observable<BaseResponse<List<ProjectDataBean>>> queryScreenProjectInfo(@FieldMap Map<String, Object> map);
 }

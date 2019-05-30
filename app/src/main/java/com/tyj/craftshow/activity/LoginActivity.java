@@ -82,25 +82,36 @@ public class LoginActivity extends BaseActivity {
     @SuppressLint("CheckResult")
     public void setPostLogin(){//登录请求
         DialogUtil.showWaittingDialog(LoginActivity.this);
-        Map<String,Object> map = new HashMap<>(15);
-        map.put("user", "12345678");
-        map.put("password", "mima");
-        RetrofitUtil.getApiService().postLoginInfo(map)
-                .compose(compose())
-                .compose(bindToLifecycle())
-                .subscribe(baseResponse -> {
-                    if(baseResponse!=null){
-                        baseResponse.getData();
-
-                        Log.e("LOGIN",baseResponse.getData().toString());
-//                        finish();
+        String name = mName.getText().toString().trim();
+        String pwd = mPwd.getText().toString().trim();
+        if(TextUtils.isEmpty(name)){
+            ToastUtil.showLongToast("用户名不能为空！");
+            return;
+        }
+        if(TextUtils.isEmpty(name)){
+            ToastUtil.showLongToast("密码不能为空！");
+            return;
+        }
+//        Map<String,Object> map = new HashMap<>(15);
+//        map.put("userName", name);
+//        map.put("password", pwd);
+//        RetrofitUtil.getApiService().postLoginInfo(map)
+//                .compose(compose())
+//                .compose(bindToLifecycle())
+//                .subscribe(baseResponse -> {
+//                    DialogUtil.closeWaittingDialog();
+//                    if(!baseResponse.getResult().equals("false")){
 //                        startActivity(new Intent(this, MainActivity.class));
-                    }
-                    DialogUtil.closeWaittingDialog();
-                },throwable -> {
-                    DialogUtil.closeWaittingDialog();
-                    Log.e("TAG_LoginActivity", throwable.getMessage());
-                });
+//                        finish();
+//                        Log.e("LOGIN",baseResponse.getData().toString());
+//                    }else {
+//                        ToastUtil.showLongToast(""+baseResponse.getMessage());
+//                    }
+//
+//                },throwable -> {
+//                    DialogUtil.closeWaittingDialog();
+//                    Log.e("TAG_LoginActivity", throwable.getMessage());
+//                });
         DialogUtil.closeWaittingDialog();
         finish();
         startActivity(new Intent(this, MainActivity.class));
