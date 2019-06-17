@@ -24,6 +24,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.RequestOptions;
 import com.tyj.craftshow.activity.BroadCastMain2Activity;
+import com.tyj.craftshow.activity.BroadCastTest;
+import com.tyj.craftshow.activity.TestClolseUpActivity;
 import com.tyj.craftshow.http.BaseResponse;
 import com.tyj.craftshow.http.RetrofitUtil;
 import com.tyj.craftshow.model.DemoActivity;
@@ -148,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     /**
      * 适配器
      */
@@ -192,8 +193,12 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Log.e("TAG",position+"");
-                    if(position==3){
+                    if(position==2){
+                        startActivity(new Intent(MainActivity.this, TestClolseUpActivity.class));
+                    }else if(position==3){
                         startActivity(new Intent(MainActivity.this, BroadCastMain2Activity.class));
+                    }else if(position==4){
+                        startActivity(new Intent(MainActivity.this, BroadCastTest.class));
                     }
                 }
             });
@@ -276,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
         int originalHeight = onlyBoundsOptions.outHeight;
         if ((originalWidth == -1) || (originalHeight == -1))
             return null;
-        //图片分辨率以480x800为标准
+        //图片分辨率以480*800为标准
         float hh = 800f;//这里设置高度为800f
         float ww = 480f;//这里设置宽度为480f
         //缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
@@ -321,6 +326,5 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
         return bitmap;
     }
-
 
 }

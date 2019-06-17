@@ -30,6 +30,10 @@
         <activity android:name=".activity.BroadCastMain2Activity" />
         <activity android:name=".activity.EventBusMain3Activity"/>
         <activity android:name=".model.DemoActivity"/>
+        <activity android:name=".activity.TestClolseUpActivity"/>
+        <activity android:name=".activity.TestClolseNextActivity"/>
+        <activity android:name=".activity.BroadCastTest" />
+        <activity android:name=".activity.BroadCastTest2" />
 
     </application>
 
